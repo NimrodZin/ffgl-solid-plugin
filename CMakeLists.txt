@@ -36,17 +36,18 @@ set(FFGL_LIB_SOURCES
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglquickstart/FFGLParamTrigger.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglquickstart/FFGLPlugin.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglquickstart/FFGLSource.cpp
+    ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLFBO.cpp
+    ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScopedBufferBinding.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScopedFBOBinding.cpp
+    ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScopedRenderBufferBinding.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScopedSamplerActivation.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScopedShaderBinding.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScopedTextureBinding.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScopedVAOBinding.cpp
-    ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScopedVBOBinding.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScreenQuad.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLShader.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLUtilities.cpp
 )
-
 # Plugin source files
 set(PLUGIN_SOURCES
     source/plugins/SolidColor/SolidColor.cpp
