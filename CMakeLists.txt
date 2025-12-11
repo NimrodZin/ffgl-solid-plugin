@@ -47,4 +47,91 @@ set(FFGL_LIB_SOURCES
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLUtilities.cpp
 )
 
-# Rest of your CMakeLists.txt stays the same...
+# Plugin source files
+set(PLUGIN_SOURCES
+    source/plugins/SolidColor/SolidColor.cpp
+    source/plugins/SolidColor/SolidColor.h
+)
+
+# Define the plugin
+if(WIN32)
+    # Windows: Build as DLL
+    add_library(SolidColor SHARED ${PLUGIN_SOURCES} ${FFGL_LIB_SOURCES})
+    set_target_properties(SolidColor PROPERTIES
+        SUFFIX ".dll"
+        PREFIX ""
+        RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    )
+    # Windows-specific definitions
+    target_compile_definitions(SolidColor PRIVATE
+        _WIN32
+        WIN32
+        _WINDOWS
+        NOMINMAX
+        WIN32_LEAN_AND_MEAN
+    )
+elseif(APPLE)
+    # macOS: Build as Bundle
+    add_library(SolidColor MODULE ${PLUGIN_SOURCES} ${FFGL_LIB_SOURCES})
+    set_target_properties(SolidColor PROPERTIES
+        BUNDLE TRUE
+        BUNDLE_EXTENSION "bundle"
+        MACOSX_BUNDLE_GUI_IDENTIFIER "com.yourname.solidcolor"
+        MACOSX_BUNDLE_BUNDLE_NAME "SolidColor"
+        MACOSX_BUNDLE_BUNDLE_VERSION "${PROJECT_VERSION}"
+        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
+        LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    )
+    # macOS frameworks
+    find_library(OPENGL_FRAMEWORK OpenGL)
+    find_library(COCOA_FRAMEWORK Cocoa)
+    target_link_libraries(SolidColor PRIVATE ${OPENGL_FRAMEWORK} ${COCOA_FRAMEWORK})
+endif()
+
+# Include directories
+target_include_directories(SolidColor PRIVATE
+    ${ffgl_sdk_SOURCE_DIR}/source/lib
+    ${ffgl_sdk_SOURCE_DIR}/deps/glew/include
+)
+
+# GLEW handling
+if(WIN32)
+    # On Windows, link to prebuilt GLEW
+    target_link_libraries(SolidColor PRIVATE
+        ${ffgl_sdk_SOURCE_DIR}/deps/glew/lib/Release/x64/glew32.lib
+        opengl32
+    )
+    # Copy GLEW DLL to output directory
+    add_custom_command(TARGET SolidColor POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+        "${ffgl_sdk_SOURCE_DIR}/deps/glew/bin/Release/x64/glew32.dll"
+        "$<TARGET_FILE_DIR:SolidColor>"
+    )
+elseif(APPLE)
+    # On macOS, compile GLEW from source
+    target_sources(SolidColor PRIVATE
+        ${ffgl_sdk_SOURCE_DIR}/deps/glew/src/glew.c
+    )
+    target_compile_definitions(SolidColor PRIVATE GLEW_STATIC GLEW_NO_GLU)
+endif()
+
+# Compiler flags
+if(MSVC)
+    target_compile_options(SolidColor PRIVATE /W3 /MP)
+else()
+    target_compile_options(SolidColor PRIVATE -Wall -Wextra -Wpedantic)
+endif()
+
+# Installation
+install(TARGETS SolidColor
+    RUNTIME DESTINATION bin      # Windows DLL
+    LIBRARY DESTINATION lib      # macOS bundle
+    BUNDLE DESTINATION plugins   # macOS bundle (alternative)
+)
+
+# CPack configuration for creating distributable packages
+set(CPACK_PACKAGE_NAME "SolidColor-FFGL")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_VENDOR "Your Name")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Solid Color FFGL Plugin for Resolume Arena")
+include(CPack)
