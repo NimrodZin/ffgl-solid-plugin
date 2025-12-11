@@ -27,7 +27,7 @@ jobs:
     - name: Build
       run: cmake --build build --config Release
     
-     - name: Prepare artifacts
+    - name: Prepare artifacts
       run: |
         mkdir -p artifacts/windows
         # Search for the DLL
