@@ -27,16 +27,28 @@ jobs:
     - name: Build
       run: cmake --build build --config Release
     
-    - name: Prepare artifacts
+     - name: Prepare artifacts
       run: |
         mkdir -p artifacts/windows
-        # MSVC puts output in build/Release/ not build/bin/Release/
-        cp build/Release/SolidColor.dll artifacts/windows/
-        # Check for GLEW DLL in both possible locations
-        if (Test-Path build/Release/glew32.dll) { 
-          cp build/Release/glew32.dll artifacts/windows/ 
-        } elseif (Test-Path build/bin/Release/glew32.dll) { 
-          cp build/bin/Release/glew32.dll artifacts/windows/ 
+        # Search for the DLL
+        Write-Host "Searching for SolidColor.dll..."
+        Get-ChildItem -Path build -Recurse -Filter "SolidColor.dll" | ForEach-Object { Write-Host $_.FullName }
+        Get-ChildItem -Path build -Recurse -Filter "*.dll" | ForEach-Object { Write-Host $_.FullName }
+        # Try to copy from common locations
+        $dllPath = Get-ChildItem -Path build -Recurse -Filter "SolidColor.dll" -ErrorAction SilentlyContinue | Select-Object -First 1
+        if ($dllPath) {
+          Write-Host "Found DLL at: $($dllPath.FullName)"
+          Copy-Item $dllPath.FullName artifacts/windows/
+          # Also search for GLEW
+          $glewPath = Get-ChildItem -Path build -Recurse -Filter "glew32.dll" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($glewPath) {
+            Copy-Item $glewPath.FullName artifacts/windows/
+          }
+        } else {
+          Write-Host "ERROR: SolidColor.dll not found!"
+          Write-Host "Build directory structure:"
+          Get-ChildItem -Path build -Recurse | Select-Object FullName
+          exit 1
         }
       shell: pwsh
     
