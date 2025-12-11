@@ -18,10 +18,11 @@ endif()
 
 # FFGL SDK location - we'll use FetchContent to get the official SDK
 include(FetchContent)
+
 FetchContent_Declare(
     ffgl_sdk
     GIT_REPOSITORY https://github.com/resolume/ffgl.git
-    GIT_TAG        v2.2
+    GIT_TAG 2.2  # Use latest stable release tag
 )
 FetchContent_MakeAvailable(ffgl_sdk)
 
@@ -29,6 +30,7 @@ FetchContent_MakeAvailable(ffgl_sdk)
 set(FFGL_LIB_SOURCES
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffgl/FFGL.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffgl/FFGLPluginSDK.cpp
+    ${ffgl_sdk_SOURCE_DIR}/source/lib/ffgl/FFGLThumbnailInfo.cpp  # <-- Move here (line 33)
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglquickstart/FFGLAudio.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglquickstart/FFGLEffect.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglquickstart/FFGLMixer.cpp
@@ -41,7 +43,6 @@ set(FFGL_LIB_SOURCES
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglquickstart/FFGLParamTrigger.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglquickstart/FFGLPlugin.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglquickstart/FFGLSource.cpp
-    ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglquickstart/FFGLThumbnailInfo.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScopedFBOBinding.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScopedSamplerActivation.cpp
     ${ffgl_sdk_SOURCE_DIR}/source/lib/ffglex/FFGLScopedShaderBinding.cpp
