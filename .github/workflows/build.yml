@@ -30,8 +30,14 @@ jobs:
     - name: Prepare artifacts
       run: |
         mkdir -p artifacts/windows
-        cp build/bin/Release/SolidColor.dll artifacts/windows/
-        if (Test-Path build/bin/Release/glew32.dll) { cp build/bin/Release/glew32.dll artifacts/windows/ }
+        # MSVC puts output in build/Release/ not build/bin/Release/
+        cp build/Release/SolidColor.dll artifacts/windows/
+        # Check for GLEW DLL in both possible locations
+        if (Test-Path build/Release/glew32.dll) { 
+          cp build/Release/glew32.dll artifacts/windows/ 
+        } elseif (Test-Path build/bin/Release/glew32.dll) { 
+          cp build/bin/Release/glew32.dll artifacts/windows/ 
+        }
       shell: pwsh
     
     - name: Upload Windows artifact
